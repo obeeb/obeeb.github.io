@@ -8,7 +8,7 @@
 <div id="txt"></div>
 
 <script>
-function startTime() {
+function startTime() { //the function checks the current time and displays it once.
   const today = new Date(); //gets the current date and time.
   let h = today.getHours(); //gets the hours of today
   let m = today.getMinutes(); //gets the minutes of today
@@ -16,6 +16,7 @@ function startTime() {
   m = checkTime(m); 
   s = checkTime(s);
   document.getElementById('txt').innerHTML =  h + ":" + m + ":" + s;
+  setTimeout(startTime, 1000); //repeats this every second after you open the page.
 }
 
 function checkTime(i) { //makes the numbers viewable in a clock way without looking ugly
