@@ -3,12 +3,13 @@
 
 <body onload="startTime()">
 
-<h2>JavaScript Clock</h2>
+<h2>Block Blockk</h2>
 
 <div id="txt"></div>
 
 <script>
   //reminder to add an arraylist of jolly messages 
+  String funmessage = "test hello yes";
   
 function startTime() { //the function checks the current time and displays it once.
   const today = new Date(); //gets the current date and time.
@@ -24,6 +25,20 @@ function startTime() { //the function checks the current time and displays it on
 function checkTime(i) { //makes the numbers viewable in a clock way without looking ugly
   if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
   return i;
+}
+
+function checkBlock(){ //checks the current block of the day.
+    const today = new Date(); //gets the current date and time.
+  let h = today.getHours(); //gets the hours of today
+  if (h<=8 && m<=25){ //if the time is less than 8:25
+    funmessage= "why are you here"; //test case scenario 1111
+  }
+  let m = today.getMinutes(); //gets the minutes of today
+  let s = today.getSeconds(); //gets the seconds of today.
+  m = checkTime(m); 
+  s = checkTime(s);
+  document.getElementById('txt').innerHTML = "Current Block:" ;
+  setTimeout(startTime, 1000); //repeats this every second after you open the page.
 }
 </script>
 
