@@ -5,13 +5,16 @@
 
 <h5>Block Block</h5>
 
-<div id="clock" style="font-size: 48px;"></div>
+<div id="clock" style="font-size: 48px;"></div> 
+<div id="block" style="font-size: 48px;"></div>
 <div id="txt" style ="font-size: 30px;"></div>
+
 
 
 <script>
   //reminder to add an arraylist of jolly messages 
   var funmessage = "test hello yes";
+  var currentblock = " ";
 function startTime() { //the function checks the current time and displays it once.
   const today = new Date(); //gets the current date and time.
   let h = today.getHours(); //gets the hours of today
@@ -62,14 +65,16 @@ function checkMessage(){ //checks the current messsage of the day.
   //just kidding. i found the array which is good enough.
   function checkBlock(){ //checks the current messsage of the day.
     const today = new Date(); //gets the current date and time.
-    const blockList = ["A","B","C","D,","E"];
+    const blockList = ["A","B","C","D,","E","F","G"];
   let h = today.getHours(); //gets the hours of today
   let m = today.getMinutes(); //gets the minutes of today
   let s = today.getSeconds(); //gets the seconds of today.
-  for (let i=1
+  for (let i=1; i<5){
+    currentblock=blockList(i);
+  }
   m = checkTime(m); 
   s = checkTime(s);
-  document.getElementById('txt').innerHTML = funmessage;
+  document.getElementById('block').innerHTML = currentblock;
   setTimeout(startTime, 1000); //checking every second after you open the page.
 }
 </script>
