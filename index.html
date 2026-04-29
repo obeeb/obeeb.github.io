@@ -35,9 +35,9 @@ function checkMessage(){ //checks the current messsage of the day.
   let s = today.getSeconds(); //gets the seconds of today.
   if (h<8){ //if the time is less than 8 am
     funmessage = "good morning"; 
-  } else if (h>=8 && m>=25){ //if hours are past 8 and minutes are >25, first period has begun
+  } else if (h>=8){ //if hours are past 8, first period has begun
     funmessage = "start of the day, good luck!"; 
-  } else if (h>=9 && m>=30 ){ //second half of 1st period
+  } else if (h>=9 && m<=30 ){ //second half of 1st period
     funmessage = "keep going, just a bit longer."; 
   }
   m = checkTime(m); 
