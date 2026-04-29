@@ -37,13 +37,13 @@ function checkMessage(){ //checks the current messsage of the day.
     funmessage = "good morning"; 
   } else if (h==8){ //if hours are 8, first period has begun
     funmessage = "start of the day, good luck!"; 
-  } else if (h>=9 && m<=30 ){ //second half of 1st period
+  } else if (h>=9 && m<=30){ //second half of 1st period
     funmessage = "keep going, just a bit longer."; 
   } else if (h<=11){ //2nd period begins
     funmessage = "this is the worst part of the day i think, good luck"; 
-  } else if (h<=12)
+  } else if (h<=12){
     funmessage = "so close to lunch... youre so close";
-}
+  }
   m = checkTime(m); 
   s = checkTime(s);
   document.getElementById('txt').innerHTML = funmessage;
