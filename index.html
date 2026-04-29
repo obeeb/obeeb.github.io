@@ -28,6 +28,7 @@ function checkTime(i) { //makes the numbers viewable in a clock way without look
   return i;
 }
 
+  //they dont got arraylists in html. its all ifelse statements omg.
 function checkMessage(){ //checks the current messsage of the day.
     const today = new Date(); //gets the current date and time.
   let h = today.getHours(); //gets the hours of today
@@ -41,9 +42,31 @@ function checkMessage(){ //checks the current messsage of the day.
     funmessage = "keep going, just a bit longer."; 
   } else if (h<=11){ //2nd period begins
     funmessage = "this is the worst part of the day i think, good luck"; 
-  } else if (h<=12){
+  } else if (h<=12){//etc 3rd period
     funmessage = "so close to lunch... youre so close";
+  } else if (h<=13){//lunch
+    funmessage = "lunch.. 🤤";
+  } else if (h<=14){//etc etc 4th period
+    funmessage = "working on a full stomach is pretty important, good luck!";
+  } else if (h<=15){ //final period
+    funmessage = "homestretch, only a matter of time now";
+  } else if (h<15){
+    funmessage = "freedom..";
   }
+  m = checkTime(m); 
+  s = checkTime(s);
+  document.getElementById('txt').innerHTML = funmessage;
+  setTimeout(startTime, 1000); //checking every second after you open the page.
+}
+
+  //just kidding. i found the array which is good enough.
+  function checkBlock(){ //checks the current messsage of the day.
+    const today = new Date(); //gets the current date and time.
+    const blockList = ["A","B","C","D,","E"];
+  let h = today.getHours(); //gets the hours of today
+  let m = today.getMinutes(); //gets the minutes of today
+  let s = today.getSeconds(); //gets the seconds of today.
+  for (let i=1
   m = checkTime(m); 
   s = checkTime(s);
   document.getElementById('txt').innerHTML = funmessage;
