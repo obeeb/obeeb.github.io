@@ -1,84 +1,792 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Head-Royce Live Display</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark:  #1a4228;
+    --green:       #1d5c34;
+    --green-mid:   #2a7048;
+    --green-light: #d4ead9;
+    --gold:        #f5c800;
+    --gold-dark:   #c9a200;
+    --gold-light:  #fff9d6;
+    --white:       #ffffff;
+    --off-white:   #f7f8f5;
+    --gray-1:      #e8ebe4;
+    --gray-2:      #c8cfc0;
+    --gray-3:      #8a9680;
+    --gray-4:      #4a5442;
+    --text:        #1a2418;
+    --text-muted:  #4a5442;
+    --text-faint:  #8a9680;
+    --red:         #c0392b;
+    --amber:       #e67e00;
+    --teal:        #1a7a6e;
+  }
 
-<body onload="startTime(); checkMessage();">
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-<h5>Block Block</h5>
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--off-white);
+    color: var(--text);
+    font-family: 'Nunito Sans', sans-serif;
+    overflow: hidden;
+  }
 
-<div id="clock" style="font-size: 48px;"></div> 
-<div id="block" style="font-size: 48px;"></div>
-<div id="txt" style ="font-size: 30px;"></div>
+  .screen {
+    width: 100vw; height: 100vh;
+    display: grid;
+    grid-template-rows: 72px 1fr;
+    grid-template-columns: 1fr 360px;
+    grid-template-areas:
+      "topbar  topbar"
+      "main    sidebar";
+  }
+
+  /* ══════════════════════════════════════
+     TOP BAR
+  ══════════════════════════════════════ */
+  .topbar {
+    grid-area: topbar;
+    background: var(--green-dark);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* gold accent stripe at very bottom of header */
+  .topbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  /* SVG shield logo inline */
+  .shield-svg {
+    width: 38px; height: 44px;
+    flex-shrink: 0;
+  }
+
+  .school-wordmark {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .school-wordmark .line1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    text-transform: uppercase;
+  }
+
+  .school-wordmark .line2 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  .topbar-sep {
+    width: 1px; height: 28px;
+    background: rgba(255,255,255,0.15);
+    margin: 0 4px;
+  }
+
+  .date-pill {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.75);
+    letter-spacing: 0.03em;
+  }
+
+  .block-day-pill {
+    background: var(--gold);
+    border-radius: 6px;
+    padding: 5px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--green-dark);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .clock-group {
+    margin-left: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+
+  #clock {
+    font-family: 'Nunito', monospace;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  #clock-ampm {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+  }
+
+  /* ══════════════════════════════════════
+     MAIN
+  ══════════════════════════════════════ */
+  .main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 52px;
+    position: relative;
+    overflow: hidden;
+    background: var(--off-white);
+  }
+
+  /* subtle green leaf watermark */
+  .main::before {
+    content: '';
+    position: absolute;
+    right: -60px; bottom: -60px;
+    width: 420px; height: 420px;
+    background: var(--green-light);
+    border-radius: 50%;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .mode-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 14px;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    
+  }
 
 
+
+  .event-title-big {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(30px, 4.2vw, 62px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    color: var(--green-dark);
+    margin-bottom: 18px;
+    max-width: 840px;
+    position: relative; z-index: 1;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--white);
+    border: 1.5px solid var(--gray-1);
+    border-radius: 99px;
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  .meta-chip svg { opacity: 0.5; flex-shrink: 0; }
+
+  /* TIME REMAINING */
+  .time-block {
+    position: relative; z-index: 1;
+    margin-bottom: 28px;
+  }
+
+  .time-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .time-value {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(52px, 8vw, 104px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -3px;
+    transition: color 0.6s;
+  }
+
+  /* progress bar */
+  .prog-track {
+    margin-top: 14px;
+    width: 100%;
+    max-width: 680px;
+    height: 6px;
+    background: var(--gray-1);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s linear, background-color 0.6s;
+  }
+
+  /* motivational */
+  .motivational {
+    position: relative; z-index: 1;
+    font-size: 17px;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--text-faint);
+    max-width: 600px;
+    line-height: 1.55;
+    margin-top: 20px;
+    padding-left: 16px;
+    border-left: 3px solid var(--gold);
+    transition: opacity 0.4s;
+  }
+
+  /* IDLE STATE */
+  .idle-hero {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(22px, 3vw, 44px);
+    font-weight: 900;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+    position: relative; z-index: 1;
+  }
+
+  .next-teaser {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--white);
+    border: 2px solid var(--gray-1);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-top: 18px;
+    max-width: 680px;
+    position: relative; z-index: 1;
+  }
+
+  .next-lbl {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    white-space: nowrap;
+  }
+
+  .next-vdiv { width: 1px; height: 32px; background: var(--gray-1); }
+
+  .next-title { font-size: 16px; font-weight: 700; color: var(--green-dark); margin-bottom: 3px; }
+  .next-when  { font-size: 13px; font-weight: 500; color: var(--text-faint); }
+
+  /* ══════════════════════════════════════
+     SIDEBAR
+  ══════════════════════════════════════ */
+  .sidebar {
+    grid-area: sidebar;
+    background: var(--green-dark);
+    border-left: 3px solid var(--gold);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    gap: 20px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* faint circle decoration */
+  .sidebar::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -80px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    border: 40px solid rgba(245,200,0,0.06);
+    pointer-events: none;
+  }
+
+  .sb-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+
+  /* block schedule */
+  .block-list { display: flex; flex-direction: column; gap: 3px; }
+
+  .block-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: background 0.2s;
+  }
+
+  .block-row.current {
+    background: rgba(245,200,0,0.12);
+    border-color: rgba(245,200,0,0.3);
+  }
+
+  .block-row.past { opacity: 0.3; }
+
+  .block-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+  .block-row.current .block-dot { background: var(--gold); }
+
+  .block-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    min-width: 46px;
+  }
+
+  .block-time {
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* today events */
+  .today-list { display: flex; flex-direction: column; gap: 5px; overflow: hidden; flex: 1; }
+
+  .today-card {
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .today-card.current {
+    background: rgba(245,200,0,0.1);
+    border-color: rgba(245,200,0,0.3);
+  }
+
+  .today-card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+  }
+
+  .today-card-time {
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .no-events {
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 16px 0;
+  }
+
+
+
+
+
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="logo-area">
+<img src="data:image/png;base64,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" style="height:42px;width:auto;" alt="HRS Logo">
+      <div class="school-wordmark">
+        <span class="line1">Head-Royce</span>
+        <span class="line2">School</span>
+      </div>
+    </div>
+
+    <div class="topbar-sep"></div>
+    <div class="date-pill" id="date-display"></div>
+    <div class="block-day-pill" id="block-day-label">Day —</div>
+
+    <div class="clock-group">
+      <span id="clock">00:00:00</span>
+      <span id="clock-ampm">AM</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main" id="main-area"></main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div style="display:flex;flex-direction:column;overflow:hidden;flex:1">
+      <div class="sb-label">Today's Schedule</div>
+      <div class="today-list" id="today-list"></div>
+    </div>
+  </aside>
+
+</div>
 
 <script>
-  //reminder to add an arraylist of jolly messages 
-  var funmessage = "test hello yes";
-  var currentblock = " ";
-function startTime() { //the function checks the current time and displays it once.
-  const today = new Date(); //gets the current date and time.
-  let h = today.getHours(); //gets the hours of today
-  let m = today.getMinutes(); //gets the minutes of today
-  let s = today.getSeconds(); //gets the seconds of today.
-  m = checkTime(m); 
-  s = checkTime(s);
-  document.getElementById('clock').innerHTML =  h + ":" + m + ":" + s;
-  setTimeout(startTime, 1000); //repeats this every second after you open the page.
-}
+// ══════════════════════════════════════════════════════
+// REAL HRS BELL SCHEDULE
+// Derived from Oliver A. class schedule data
+// ══════════════════════════════════════════════════════
+// These are the fixed daily time slots — classes rotate through them.
+// Periods 1–5 are 70 min, Break/Lunch/Activity are shorter.
+const BELL_TIMES = [
+  { name: "Period 1",  start: "08:25", end: "09:35" },
+  { name: "Period 2",  start: "09:45", end: "10:55" },
+  { name: "Break",     start: "10:25", end: "10:55" },  // some days instead of P2
+  { name: "Period 3",  start: "11:00", end: "12:10" },
+  { name: "Lunch",     start: "12:10", end: "12:55" },
+  { name: "Period 4",  start: "12:55", end: "14:05" },
+  { name: "Activity",  start: "14:10", end: "14:40" },  // assembly/grade mtg
+  { name: "Period 5",  start: "14:10", end: "15:20" },  // regular class days
+];
 
-function checkTime(i) { //makes the numbers viewable in a clock way without looking ugly
-  if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-  return i;
-}
+// Simplified: show all fixed slots each day in the sidebar
+const BLOCK_SCHEDULE = {
+  1: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Period 5", start:"14:10",end:"15:20"},
+  ],
+  2: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Break",    start:"10:25",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Activity", start:"14:10",end:"14:40"},
+  ],
+  3: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Period 5", start:"14:10",end:"15:20"},
+  ],
+  4: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Activity", start:"14:10",end:"14:40"},
+  ],
+  5: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Period 5", start:"14:10",end:"15:20"},
+  ],
+  6: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Break",    start:"10:25",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Period 5", start:"14:10",end:"15:20"},
+  ],
+  7: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Activity", start:"14:10",end:"14:40"},
+  ],
+  8: [
+    {name:"Period 1", start:"08:25",end:"09:35"},
+    {name:"Period 2", start:"09:45",end:"10:55"},
+    {name:"Period 3", start:"11:00",end:"12:10"},
+    {name:"Lunch",    start:"12:10",end:"12:55"},
+    {name:"Period 4", start:"12:55",end:"14:05"},
+    {name:"Period 5", start:"14:10",end:"15:20"},
+  ],
+};
+// ── ROTATION (change ROTATION_START to first Day-1 of school year) ──
+const ROTATION_START = new Date(2026, 8, 1); // Sept 1 2026 — update when real Day 1 is known
+const SKIP_DATES = new Set([]);
 
-  //they dont got arraylists in html. its all ifelse statements omg.
-function checkMessage(){ //checks the current messsage of the day.
-    const today = new Date(); //gets the current date and time.
-  let h = today.getHours(); //gets the hours of today
-  let m = today.getMinutes(); //gets the minutes of today
-  let s = today.getSeconds(); //gets the seconds of today.
-  if (h<8){ //if the time is less than 8 am
-    funmessage = "good morning"; 
-  } else if (h==8){ //if hours are 8, first period has begun
-    funmessage = "start of the day, good luck!"; 
-  } else if (h>=9){ //second half of 1st period
-    funmessage = "keep going, just a bit longer."; 
-  } else if (h<=11){ //2nd period begins
-    funmessage = "this is the worst part of the day i think, good luck"; 
-  } else if (h<=12){//etc 3rd period
-    funmessage = "so close to lunch... youre so close";
-  } else if (h<=13){//lunch
-    funmessage = "lunch.. 🤤";
-  } else if (h<=14){//etc etc 4th period
-    funmessage = "working on a full stomach is pretty important, good luck!";
-  } else if (h<=15){ //final period
-    funmessage = "homestretch, only a matter of time now";
-  } else if (h<15){
-    funmessage = "freedom..";
+function getBlockDay(date) {
+  const d = new Date(date); d.setHours(0,0,0,0);
+  const start = new Date(ROTATION_START); start.setHours(0,0,0,0);
+  if (d < start) return null;
+  let count = 0;
+  const cur = new Date(start);
+  while (cur <= d) {
+    const dow = cur.getDay();
+    const iso = cur.toISOString().slice(0,10);
+    if (dow >= 1 && dow <= 5 && !SKIP_DATES.has(iso)) count++;
+    cur.setDate(cur.getDate()+1);
   }
-  m = checkTime(m); 
-  s = checkTime(s);
-  document.getElementById('txt').innerHTML = funmessage;
-  setTimeout(startTime, 1000); //checking every second after you open the page.
+  return count === 0 ? null : ((count-1) % 8) + 1;
 }
 
-  //just kidding. i found the array which is good enough.
-  function checkBlock(){ //checks the current messsage of the day.
-    const today = new Date(); //gets the current date and time.
-    const blockList = ["A","B","C","D,","E","F","G"];
-  let h = today.getHours(); //gets the hours of today
-  let m = today.getMinutes(); //gets the minutes of today
-  let s = today.getSeconds(); //gets the seconds of today.
-  for (let i=1; i<5){
-    currentblock=blockList(i);
-  }
-  m = checkTime(m); 
-  s = checkTime(s);
-  document.getElementById('block').innerHTML = currentblock;
-  setTimeout(startTime, 1000); //checking every second after you open the page.
+// ── CALENDAR EVENTS (Oliver A. personal schedule) ──
+const RAW = [{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260429T152500Z","e":"20260429T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260429T172500Z","e":"20260429T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260429T180000Z","e":"20260429T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260429T211000Z","e":"20260429T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260430T152500Z","e":"20260430T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260430T164500Z","e":"20260430T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260430T180000Z","e":"20260430T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260430T195500Z","e":"20260430T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260430T211000Z","e":"20260430T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260501T152500Z","e":"20260501T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260501T195500Z","e":"20260501T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260501T211000Z","e":"20260501T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260504T152500Z","e":"20260504T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260504T164500Z","e":"20260504T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260504T180000Z","e":"20260504T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260504T195500Z","e":"20260504T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260505T152500Z","e":"20260505T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260505T164500Z","e":"20260505T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260505T180000Z","e":"20260505T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260505T195500Z","e":"20260505T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260505T211000Z","e":"20260505T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260505T211000Z","e":"20260505T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260506T152500Z","e":"20260506T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260506T172500Z","e":"20260506T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260506T180000Z","e":"20260506T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260506T211000Z","e":"20260506T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260507T152500Z","e":"20260507T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260507T164500Z","e":"20260507T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260507T180000Z","e":"20260507T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260507T195500Z","e":"20260507T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260507T211000Z","e":"20260507T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260508T152500Z","e":"20260508T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260508T195500Z","e":"20260508T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260508T211000Z","e":"20260508T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260511T152500Z","e":"20260511T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260511T164500Z","e":"20260511T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260511T180000Z","e":"20260511T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260511T195500Z","e":"20260511T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260512T152500Z","e":"20260512T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260512T164500Z","e":"20260512T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260512T180000Z","e":"20260512T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260512T195500Z","e":"20260512T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260512T211000Z","e":"20260512T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260512T211000Z","e":"20260512T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260513T152500Z","e":"20260513T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260513T172500Z","e":"20260513T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260513T180000Z","e":"20260513T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260513T211000Z","e":"20260513T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260514T152500Z","e":"20260514T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260514T164500Z","e":"20260514T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260514T180000Z","e":"20260514T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260514T195500Z","e":"20260514T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260514T211000Z","e":"20260514T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260515T152500Z","e":"20260515T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260515T195500Z","e":"20260515T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260515T211000Z","e":"20260515T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260518T152500Z","e":"20260518T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260518T164500Z","e":"20260518T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260518T180000Z","e":"20260518T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260518T195500Z","e":"20260518T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260519T152500Z","e":"20260519T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260519T164500Z","e":"20260519T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260519T180000Z","e":"20260519T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260519T195500Z","e":"20260519T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260519T211000Z","e":"20260519T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260519T211000Z","e":"20260519T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260520T152500Z","e":"20260520T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260520T172500Z","e":"20260520T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260520T180000Z","e":"20260520T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260520T211000Z","e":"20260520T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260521T152500Z","e":"20260521T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260521T164500Z","e":"20260521T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260521T180000Z","e":"20260521T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260521T195500Z","e":"20260521T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260521T211000Z","e":"20260521T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260522T152500Z","e":"20260522T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260522T195500Z","e":"20260522T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260522T211000Z","e":"20260522T222000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260526T152500Z","e":"20260526T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260526T164500Z","e":"20260526T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260526T180000Z","e":"20260526T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260526T195500Z","e":"20260526T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260526T211000Z","e":"20260526T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260526T211000Z","e":"20260526T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260527T152500Z","e":"20260527T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260527T172500Z","e":"20260527T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260527T180000Z","e":"20260527T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260527T211000Z","e":"20260527T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260528T152500Z","e":"20260528T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260528T164500Z","e":"20260528T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260528T180000Z","e":"20260528T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260528T195500Z","e":"20260528T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260528T211000Z","e":"20260528T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260529T152500Z","e":"20260529T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260529T195500Z","e":"20260529T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260529T211000Z","e":"20260529T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260601T152500Z","e":"20260601T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260601T164500Z","e":"20260601T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260601T180000Z","e":"20260601T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260601T195500Z","e":"20260601T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260602T152500Z","e":"20260602T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260602T164500Z","e":"20260602T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260602T180000Z","e":"20260602T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260602T195500Z","e":"20260602T210500Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260602T211000Z","e":"20260602T214000Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260602T211000Z","e":"20260602T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260603T152500Z","e":"20260603T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260603T172500Z","e":"20260603T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260603T180000Z","e":"20260603T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260603T211000Z","e":"20260603T222000Z"}];
+
+function parseDate(r) {
+  r = r.replace(/\s/g,'');
+  if (r.length===8) return new Date(+r.slice(0,4),+r.slice(4,6)-1,+r.slice(6,8));
+  const s=r.slice(0,4)+'-'+r.slice(4,6)+'-'+r.slice(6,8)+'T'+r.slice(9,11)+':'+r.slice(11,13)+':'+r.slice(13,15)+(r.endsWith('Z')?'Z':'');
+  return new Date(s);
 }
+
+const EVENTS = RAW.map(e=>({
+  title:e.t, location:e.l, desc:e.d,
+  start:parseDate(e.s), end:parseDate(e.e),
+  allDay:e.s.length===8
+})).sort((a,b)=>a.start-b.start);
+// ── MESSAGES ──
+const MSG = {
+  ending: ["Almost free! Hang in there 🏁","The finish line is RIGHT there.","Last few minutes — you've survived worse.","Nearly done! Don't blow it now 😄","So close. SO close."],
+  soon:   ["Getting there! Snacks incoming soon 🍕","Home stretch — you've totally got this.","Just a little more brain power required.","The clock is on your side. Mostly.","Almost time to pack up and look busy."],
+  midway: ["Halfway! Reward yourself mentally 🧠","You're in the zone. Or close enough.","Peak focus hours. Probably.","This is going great. Probably.","Keep it up — lunch isn't far off!"],
+  early:  ["Fresh period, fresh vibes ✨","The day is young and so are you!","Let's gooo 🚀","Off to a great start — don't jinx it.","New period, new you. Same homework though."],
+  idle:   ["Catch your breath — you've earned it ☕","Transitioning like a pro.","Brief intermission. Snacks recommended.","Use this time wisely. Or just stretch.","The hallways are calling 🚶"],
+  closing:["That's a wrap! Go touch some grass 🌿","Done for the day! You did it!","School's out — time to decompress 🎉","Another day conquered. Nice work!","See you tomorrow, legend 👋"],
+};
+
+let lastPool = null, curMsg = '';
+
+function pickMsg(pool) {
+  if (pool !== lastPool) { curMsg = pool[Math.floor(Math.random()*pool.length)]; lastPool = pool; }
+  return curMsg;
+}
+
+// ── HELPERS ──
+function toMins(hhmm) { const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+function nowMins() { const n=new Date(); return n.getHours()*60+n.getMinutes()+n.getSeconds()/60; }
+function fmtSec(s) {
+  const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=Math.floor(s%60);
+  if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  return `${m}:${String(ss).padStart(2,'0')}`;
+}
+function fmtTime(d) { return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); }
+function sameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── CLOCK ──
+function updateClock() {
+  const n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+  const h12=h%12||12;
+  document.getElementById('clock').textContent=`${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.getElementById('clock-ampm').textContent=h<12?'AM':'PM';
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('date-display').textContent=`${days[n.getDay()]}  ·  ${months[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
+}
+
+// ── SIDEBAR TODAY SCHEDULE ──
+function renderTodaySidebar(){
+  const el=document.getElementById('today-list');
+  const now=new Date();
+  const evts=EVENTS.filter(e=>!e.allDay&&sameDay(e.start,now));
+  if(!evts.length){el.innerHTML='<div class="no-events">No classes today</div>';return;}
+  el.innerHTML=evts.map(e=>{
+    const isCur=now>=e.start&&now<e.end;
+    const isPast=now>=e.end;
+    return `<div class="today-card ${isCur?'current':''}" style="${isPast?'opacity:0.35':''}">
+      <div class="today-card-title">${esc(e.title)}</div>
+      <div class="today-card-time">${fmtTime(e.start)} – ${fmtTime(e.end)}${e.location&&e.location!=='.'?' · '+esc(e.location):''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── MAIN RENDER ──
+function getActiveBlock(dayNum){
+  if(!dayNum||!BLOCK_SCHEDULE[dayNum]) return null;
+  const nm=nowMins();
+  return BLOCK_SCHEDULE[dayNum].find(p=>nm>=toMins(p.start)&&nm<toMins(p.end))||null;
+}
+function getActiveEvent(){const now=new Date();return EVENTS.find(e=>!e.allDay&&now>=e.start&&now<e.end)||null;}
+function getNextEvent(){const now=new Date();return EVENTS.find(e=>!e.allDay&&e.start>now)||null;}
+function getTodayAllDay(){const now=new Date();return EVENTS.filter(e=>e.allDay&&sameDay(e.start,now));}
+
+function colorForMins(m){
+  if(m<5)  return {c:'var(--red)',   pool:MSG.ending};
+  if(m<15) return {c:'var(--amber)', pool:MSG.soon};
+  if(m<35) return {c:'var(--teal)',  pool:MSG.midway};
+  return         {c:'var(--green)',  pool:MSG.early};
+}
+
+function renderMain(dayNum){
+  const now=new Date(), nm=nowMins();
+  const area=document.getElementById('main-area');
+  const activeEvent=getActiveEvent();
+  const activeBlock=getActiveBlock(dayNum);
+  const nextEvent=getNextEvent();
+  const allDay=getTodayAllDay();
+
+  document.getElementById('block-day-label').textContent=dayNum?`Day ${dayNum}`:'—';
+
+  if(activeEvent){
+    const rem=(activeEvent.end-now)/1000;
+    const total=(activeEvent.end-activeEvent.start)/1000;
+    const pct=Math.min(100,((total-rem)/total)*100);
+    const {c,pool}=colorForMins(rem/60);
+    const msg=pickMsg(pool);
+    area.innerHTML=`
+      <div class="mode-label"><span class="live-dot"></span><span style="color:var(--green-mid)">Live Event</span></div>
+      <div class="event-title-big">${esc(activeEvent.title)}</div>
+      <div class="meta-row">
+        <div class="meta-chip">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 1.5"/></svg>
+          ${fmtTime(activeEvent.start)} – ${fmtTime(activeEvent.end)}
+        </div>
+        ${activeEvent.location?`<div class="meta-chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.5"/></svg>${esc(activeEvent.location)}</div>`:''}
+      </div>
+      <div class="time-block">
+        <div class="time-label">Time Remaining</div>
+        <div class="time-value" style="color:${c}">${fmtSec(rem)}</div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
+      </div>
+      <div class="motivational">${esc(msg)}</div>`;
+    return;
+  }
+
+  if(activeBlock){
+    const bEnd=toMins(activeBlock.end),bStart=toMins(activeBlock.start);
+    const rem=Math.max(0,(bEnd-nm)*60);
+    const total=(bEnd-bStart)*60;
+    const pct=Math.min(100,((total-rem)/total)*100);
+    const {c,pool}=colorForMins(rem/60);
+    const msg=pickMsg(pool);
+    const lbl=activeBlock.name==='Break'?'Morning Break':activeBlock.name==='Lunch'?'Lunch Break':`Period ${activeBlock.name}`;
+    area.innerHTML=`
+      <div class="mode-label"><span class="live-dot"></span><span style="color:var(--green-mid)">Block in Session · Day ${dayNum}</span></div>
+      <div class="event-title-big">${esc(lbl)}</div>
+      <div class="meta-row">
+        <div class="meta-chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 1.5"/></svg>${activeBlock.start} – ${activeBlock.end}</div>
+      </div>
+      <div class="time-block">
+        <div class="time-label">Time Remaining</div>
+        <div class="time-value" style="color:${c}">${fmtSec(rem)}</div>
+        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
+      </div>
+      <div class="motivational">${esc(msg)}</div>`;
+    return;
+  }
+
+  // IDLE
+  const isAfter=nm>=15*60;
+  const pool=isAfter?MSG.closing:MSG.idle;
+  const msg=pickMsg(pool);
+  const allDayHtml=allDay.length?`<div class="meta-row">${allDay.map(e=>`<div class="meta-chip">${esc(e.title)}</div>`).join('')}</div>`:'';
+  let nextHtml='';
+  if(nextEvent){
+    const diff=(nextEvent.start-now)/1000/60;
+    const when=diff<60?`in ${Math.round(diff)} min`:diff<1440?`Today at ${fmtTime(nextEvent.start)}`:`${nextEvent.start.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${fmtTime(nextEvent.start)}`;
+    nextHtml=`<div class="next-teaser">
+      <span class="next-lbl">Up next</span>
+      <div class="next-vdiv"></div>
+      <div>
+        <div class="next-title">${esc(nextEvent.title)}</div>
+        <div class="next-when">${when}${nextEvent.location?' · '+esc(nextEvent.location):''}</div>
+      </div>
+    </div>`;
+  }
+  area.innerHTML=`
+    <div class="mode-label"><span class="live-dot" style="background:var(--gray-3)"></span><span style="color:var(--text-faint)">${isAfter?'After School':'Between Blocks'}</span></div>
+    <div class="idle-hero">${isAfter?'Great work today, HRS.':'No block in session right now.'}</div>
+    ${allDayHtml}
+    ${nextHtml}
+    <div class="motivational" style="margin-top:22px">${esc(msg)}</div>`;
+}
+
+// ── MAIN LOOP ──
+function tick(){
+  updateClock();
+  const now=new Date();
+  const dayNum=getBlockDay(now);
+  renderMain(dayNum);
+  renderTodaySidebar();
+}
+
+tick();
+setInterval(tick,1000);
 </script>
-
 </body>
+</html>
 </html>
 
