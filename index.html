@@ -1,3 +1,18 @@
+Enable desktop notifications for Head-Royce School Mail.
+   OK  No thanks
+
+12 of 3,375
+new code
+Inbox
+
+Oliver Arnold
+Attachments
+Wed, May 6, 12:08 PM (2 days ago)
+to me
+
+
+ One attachment
+  •  Scanned by Gmail
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -477,7 +492,6 @@
 
     <div class="topbar-sep"></div>
     <div class="date-pill" id="date-display"></div>
-    <div class="block-day-pill" id="block-day-label">Day —</div>
 
     <div class="clock-group">
       <span id="clock">00:00:00</span>
@@ -490,101 +504,98 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div style="display:flex;flex-direction:column;overflow:hidden;flex:1">
-      <div class="sb-label">Today's Schedule</div>
-      <div class="today-list" id="today-list"></div>
+    <div style="display:flex;flex-direction:column;overflow:hidden;flex:1;gap:0">
+      <div>
+        <div class="sb-label">Today's Schedule</div>
+        <div class="today-list" id="today-list"></div>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08);margin-top:16px;padding-top:16px;overflow:hidden;flex:1;display:flex;flex-direction:column">
+        <div class="sb-label">Tomorrow</div>
+        <div class="today-list" id="tomorrow-list"></div>
+      </div>
     </div>
   </aside>
 
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════
-// REAL HRS BELL SCHEDULE
-// Derived from Oliver A. class schedule data
-// ══════════════════════════════════════════════════════
-// These are the fixed daily time slots — classes rotate through them.
-// Periods 1–5 are 70 min, Break/Lunch/Activity are shorter.
-const BELL_TIMES = [
-  { name: "Period 1",  start: "08:25", end: "09:35" },
-  { name: "Period 2",  start: "09:45", end: "10:55" },
-  { name: "Break",     start: "10:25", end: "10:55" },  // some days instead of P2
-  { name: "Period 3",  start: "11:00", end: "12:10" },
-  { name: "Lunch",     start: "12:10", end: "12:55" },
-  { name: "Period 4",  start: "12:55", end: "14:05" },
-  { name: "Activity",  start: "14:10", end: "14:40" },  // assembly/grade mtg
-  { name: "Period 5",  start: "14:10", end: "15:20" },  // regular class days
-];
-
-// Simplified: show all fixed slots each day in the sidebar
+// ── REAL HRS 8-DAY BLOCK SCHEDULE (from ICS)
 const BLOCK_SCHEDULE = {
   1: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Period 5", start:"14:10",end:"15:20"},
+    {name:"A Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"B Block", start:"09:45", end:"10:55"},
+    {name:"C Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"D Block", start:"12:55", end:"14:05"},
+    {name:"E Block", start:"14:10", end:"15:20"},
   ],
   2: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Break",    start:"10:25",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Activity", start:"14:10",end:"14:40"},
+    {name:"F Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"G Block", start:"09:45", end:"10:55"},
+    {name:"A Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"B Block", start:"12:55", end:"14:05"},
+    {name:"Assembly", start:"14:10", end:"14:40"},
   ],
   3: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Period 5", start:"14:10",end:"15:20"},
+    {name:"B Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"C Block", start:"09:45", end:"10:55"},
+    {name:"D Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"E Block", start:"12:55", end:"14:05"},
+    {name:"F Block", start:"14:10", end:"15:20"},
   ],
   4: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Activity", start:"14:10",end:"14:40"},
+    {name:"C Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"10:25"},
+    {name:"Grade Meeting", start:"10:25", end:"10:55"},
+    {name:"D Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"E Block", start:"12:55", end:"14:05"},
+    {name:"F Block", start:"14:10", end:"15:20"},
   ],
   5: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Period 5", start:"14:10",end:"15:20"},
+    {name:"G Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"A Block", start:"09:45", end:"10:55"},
+    {name:"B Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"C Block", start:"12:55", end:"14:05"},
+    {name:"Assembly", start:"14:10", end:"14:40"},
   ],
   6: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Break",    start:"10:25",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Period 5", start:"14:10",end:"15:20"},
+    {name:"D Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"E Block", start:"09:45", end:"10:55"},
+    {name:"F Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"G Block", start:"12:55", end:"14:05"},
+    {name:"A Block", start:"14:10", end:"15:20"},
   ],
   7: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Activity", start:"14:10",end:"14:40"},
+    {name:"E Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"F Block", start:"09:45", end:"10:55"},
+    {name:"G Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"A Block", start:"12:55", end:"14:05"},
+    {name:"Grade Meeting", start:"14:10", end:"14:40"},
   ],
   8: [
-    {name:"Period 1", start:"08:25",end:"09:35"},
-    {name:"Period 2", start:"09:45",end:"10:55"},
-    {name:"Period 3", start:"11:00",end:"12:10"},
-    {name:"Lunch",    start:"12:10",end:"12:55"},
-    {name:"Period 4", start:"12:55",end:"14:05"},
-    {name:"Period 5", start:"14:10",end:"15:20"},
+    {name:"B Block", start:"08:25", end:"09:35"},
+    {name:"Break", start:"09:35", end:"09:45"},
+    {name:"C Block", start:"09:45", end:"10:55"},
+    {name:"D Block", start:"11:00", end:"12:10"},
+    {name:"Lunch", start:"12:10", end:"12:55"},
+    {name:"E Block", start:"12:55", end:"14:05"},
+    {name:"F Block", start:"14:10", end:"15:20"},
   ],
 };
 // ── ROTATION (change ROTATION_START to first Day-1 of school year) ──
-const ROTATION_START = new Date(2026, 8, 1); // Sept 1 2026 — update when real Day 1 is known
+const ROTATION_START = new Date(2026, 4, 1); // May 1, 2026 = Day 1
 const SKIP_DATES = new Set([]);
 
 function getBlockDay(date) {
@@ -602,33 +613,53 @@ function getBlockDay(date) {
   return count === 0 ? null : ((count-1) % 8) + 1;
 }
 
-// ── CALENDAR EVENTS (Oliver A. personal schedule) ──
-const RAW = [{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260429T152500Z","e":"20260429T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260429T172500Z","e":"20260429T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260429T180000Z","e":"20260429T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260429T211000Z","e":"20260429T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260430T152500Z","e":"20260430T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260430T164500Z","e":"20260430T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260430T180000Z","e":"20260430T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260430T195500Z","e":"20260430T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260430T211000Z","e":"20260430T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260501T152500Z","e":"20260501T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260501T195500Z","e":"20260501T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260501T211000Z","e":"20260501T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260504T152500Z","e":"20260504T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260504T164500Z","e":"20260504T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260504T180000Z","e":"20260504T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260504T195500Z","e":"20260504T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260505T152500Z","e":"20260505T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260505T164500Z","e":"20260505T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260505T180000Z","e":"20260505T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260505T195500Z","e":"20260505T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260505T211000Z","e":"20260505T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260505T211000Z","e":"20260505T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260506T152500Z","e":"20260506T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260506T172500Z","e":"20260506T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260506T180000Z","e":"20260506T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260506T211000Z","e":"20260506T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260507T152500Z","e":"20260507T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260507T164500Z","e":"20260507T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260507T180000Z","e":"20260507T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260507T195500Z","e":"20260507T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260507T211000Z","e":"20260507T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260508T152500Z","e":"20260508T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260508T195500Z","e":"20260508T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260508T211000Z","e":"20260508T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260511T152500Z","e":"20260511T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260511T164500Z","e":"20260511T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260511T180000Z","e":"20260511T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260511T195500Z","e":"20260511T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260512T152500Z","e":"20260512T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260512T164500Z","e":"20260512T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260512T180000Z","e":"20260512T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260512T195500Z","e":"20260512T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260512T211000Z","e":"20260512T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260512T211000Z","e":"20260512T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260513T152500Z","e":"20260513T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260513T172500Z","e":"20260513T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260513T180000Z","e":"20260513T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260513T211000Z","e":"20260513T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260514T152500Z","e":"20260514T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260514T164500Z","e":"20260514T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260514T180000Z","e":"20260514T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260514T195500Z","e":"20260514T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260514T211000Z","e":"20260514T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260515T152500Z","e":"20260515T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260515T195500Z","e":"20260515T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260515T211000Z","e":"20260515T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260518T152500Z","e":"20260518T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260518T164500Z","e":"20260518T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260518T180000Z","e":"20260518T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260518T195500Z","e":"20260518T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260519T152500Z","e":"20260519T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260519T164500Z","e":"20260519T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260519T180000Z","e":"20260519T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260519T195500Z","e":"20260519T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260519T211000Z","e":"20260519T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260519T211000Z","e":"20260519T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260520T152500Z","e":"20260520T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260520T172500Z","e":"20260520T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260520T180000Z","e":"20260520T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260520T211000Z","e":"20260520T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260521T152500Z","e":"20260521T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260521T164500Z","e":"20260521T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260521T180000Z","e":"20260521T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260521T195500Z","e":"20260521T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260521T211000Z","e":"20260521T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260522T152500Z","e":"20260522T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260522T195500Z","e":"20260522T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260522T211000Z","e":"20260522T222000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260526T152500Z","e":"20260526T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260526T164500Z","e":"20260526T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260526T180000Z","e":"20260526T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260526T195500Z","e":"20260526T210500Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260526T211000Z","e":"20260526T214000Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260526T211000Z","e":"20260526T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260527T152500Z","e":"20260527T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260527T172500Z","e":"20260527T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260527T180000Z","e":"20260527T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260527T211000Z","e":"20260527T222000Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260528T152500Z","e":"20260528T163500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260528T164500Z","e":"20260528T175500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260528T180000Z","e":"20260528T191000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260528T195500Z","e":"20260528T210500Z"},{"t":"Assembly US - 27-Ngu","l":"M.101","d":"","s":"20260528T211000Z","e":"20260528T214000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260529T152500Z","e":"20260529T163500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260529T195500Z","e":"20260529T210500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260529T211000Z","e":"20260529T222000Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260601T152500Z","e":"20260601T163500Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260601T164500Z","e":"20260601T175500Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260601T180000Z","e":"20260601T191000Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260601T195500Z","e":"20260601T210500Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260602T152500Z","e":"20260602T163500Z"},{"t":"Precalculus Honors - G","l":"K.303","d":"","s":"20260602T164500Z","e":"20260602T175500Z"},{"t":"History 11 Honors - Ag","l":"K.302","d":"","s":"20260602T180000Z","e":"20260602T191000Z"},{"t":"Biology - B","l":"K.206","d":"","s":"20260602T195500Z","e":"20260602T210500Z"},{"t":"Adv 2027 - Ngu","l":"L.209","d":"","s":"20260602T211000Z","e":"20260602T214000Z"},{"t":"Grade 11 - Admin Oversight - All 2027s","l":".","d":"","s":"20260602T211000Z","e":"20260602T214000Z"},{"t":"Spanish 4 Honors - C","l":"I.202","d":"","s":"20260603T152500Z","e":"20260603T163500Z"},{"t":"Grade Mtg - 27-Ngu","l":".","d":"","s":"20260603T172500Z","e":"20260603T175500Z"},{"t":"Principles of Engineering (H) - D","l":"Q.101","d":"","s":"20260603T180000Z","e":"20260603T191000Z"},{"t":"English 11 Honors - Ft","l":"L.105","d":"","s":"20260603T211000Z","e":"20260603T222000Z"}];
-
-function parseDate(r) {
-  r = r.replace(/\s/g,'');
-  if (r.length===8) return new Date(+r.slice(0,4),+r.slice(4,6)-1,+r.slice(6,8));
-  const s=r.slice(0,4)+'-'+r.slice(4,6)+'-'+r.slice(6,8)+'T'+r.slice(9,11)+':'+r.slice(11,13)+':'+r.slice(13,15)+(r.endsWith('Z')?'Z':'');
-  return new Date(s);
-}
-
-const EVENTS = RAW.map(e=>({
-  title:e.t, location:e.l, desc:e.d,
-  start:parseDate(e.s), end:parseDate(e.e),
-  allDay:e.s.length===8
-})).sort((a,b)=>a.start-b.start);
 // ── MESSAGES ──
 const MSG = {
-  ending: ["Almost free! Hang in there 🏁","The finish line is RIGHT there.","Last few minutes — you've survived worse.","Nearly done! Don't blow it now 😄","So close. SO close."],
-  soon:   ["Getting there! Snacks incoming soon 🍕","Home stretch — you've totally got this.","Just a little more brain power required.","The clock is on your side. Mostly.","Almost time to pack up and look busy."],
-  midway: ["Halfway! Reward yourself mentally 🧠","You're in the zone. Or close enough.","Peak focus hours. Probably.","This is going great. Probably.","Keep it up — lunch isn't far off!"],
-  early:  ["Fresh period, fresh vibes ✨","The day is young and so are you!","Let's gooo 🚀","Off to a great start — don't jinx it.","New period, new you. Same homework though."],
-  idle:   ["Catch your breath — you've earned it ☕","Transitioning like a pro.","Brief intermission. Snacks recommended.","Use this time wisely. Or just stretch.","The hallways are calling 🚶"],
-  closing:["That's a wrap! Go touch some grass 🌿","Done for the day! You did it!","School's out — time to decompress 🎉","Another day conquered. Nice work!","See you tomorrow, legend 👋"],
+  ending: [
+    "You are closer to the end than you have ever been.",
+    "Most of the block is behind you at this point.",
+    "The last few minutes are statistically the shortest.",
+    "You have made it this far, which is most of the way.",
+    "It is almost over. It has been almost over for a while, but now it really is.",
+  ],
+  soon: [
+    "The second half of anything is generally considered easier.",
+    "You are in the portion of the block where the end is visible.",
+    "Most people find that time moves faster once they stop checking it.",
+    "You are closer to the next thing than you are to the beginning of this one.",
+    "The block is winding down. This is the expected outcome.",
+  ],
+  midway: [
+    "You are approximately halfway through, which means progress is occurring.",
+    "The block is going about as expected.",
+    "This is the middle. Most things have a middle. You are in it.",
+    "Things are proceeding at a normal pace for a school block.",
+    "You have been here for a while and will be here for a similar amount of time.",
+  ],
+  early: [
+    "The block has started. This is how blocks work.",
+    "You are at the beginning, which means there is a lot of time left.",
+    "Everything that will happen in this block is still ahead of you.",
+    "The block is underway. You are present for it.",
+    "This is the part where the most time remains.",
+  ],
+  idle: [
+    "There is no block happening right now. The next one will start at a scheduled time.",
+    "This is the time between blocks. It exists for a reason.",
+    "You have a few minutes that do not belong to any particular block.",
+    "The schedule has allocated this time for transitioning between things.",
+    "Nothing is officially happening right now, which is fine.",
+  ],
+  closing: [
+    "The school day is over. You were present for most of it.",
+    "All the blocks have concluded. That is the end of those.",
+    "There are no more blocks scheduled for today.",
+    "The day happened and now it is done.",
+    "You have reached the part of the day that takes place after school.",
+  ],
 };
 
 let lastPool = null, curMsg = '';
-
 function pickMsg(pool) {
   if (pool !== lastPool) { curMsg = pool[Math.floor(Math.random()*pool.length)]; lastPool = pool; }
   return curMsg;
@@ -642,9 +673,18 @@ function fmtSec(s) {
   if(h>0) return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
   return `${m}:${String(ss).padStart(2,'0')}`;
 }
-function fmtTime(d) { return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); }
-function sameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function fmtTime12(hhmm) {
+  const [h,m] = hhmm.split(':').map(Number);
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function nextSchoolDay(date) {
+  const d = new Date(date);
+  do { d.setDate(d.getDate() + 1); } while (d.getDay() === 0 || d.getDay() === 6);
+  return d;
+}
 
 // ── CLOCK ──
 function updateClock() {
@@ -657,121 +697,119 @@ function updateClock() {
   document.getElementById('date-display').textContent=`${days[n.getDay()]}  ·  ${months[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
 }
 
-// ── SIDEBAR TODAY SCHEDULE ──
-function renderTodaySidebar(){
-  const el=document.getElementById('today-list');
-  const now=new Date();
-  const evts=EVENTS.filter(e=>!e.allDay&&sameDay(e.start,now));
-  if(!evts.length){el.innerHTML='<div class="no-events">No classes today</div>';return;}
-  el.innerHTML=evts.map(e=>{
-    const isCur=now>=e.start&&now<e.end;
-    const isPast=now>=e.end;
+// ── SIDEBAR: today + tomorrow blocks ──
+function renderDayBlocks(elId, dayNum) {
+  const el = document.getElementById(elId);
+  if (!dayNum || !BLOCK_SCHEDULE[dayNum]) {
+    el.innerHTML = '<div class="no-events">No school</div>';
+    return;
+  }
+  const nm = nowMins();
+  const isToday = elId === 'today-list';
+  el.innerHTML = BLOCK_SCHEDULE[dayNum].map(p => {
+    const isCur = isToday && nm >= toMins(p.start) && nm < toMins(p.end);
+    const isPast = isToday && nm >= toMins(p.end);
     return `<div class="today-card ${isCur?'current':''}" style="${isPast?'opacity:0.35':''}">
-      <div class="today-card-title">${esc(e.title)}</div>
-      <div class="today-card-time">${fmtTime(e.start)} – ${fmtTime(e.end)}${e.location&&e.location!=='.'?' · '+esc(e.location):''}</div>
+      <div class="today-card-title">${esc(p.name)}</div>
+      <div class="today-card-time">${fmtTime12(p.start)} – ${fmtTime12(p.end)}</div>
     </div>`;
   }).join('');
 }
 
-// ── MAIN RENDER ──
-function getActiveBlock(dayNum){
-  if(!dayNum||!BLOCK_SCHEDULE[dayNum]) return null;
-  const nm=nowMins();
-  return BLOCK_SCHEDULE[dayNum].find(p=>nm>=toMins(p.start)&&nm<toMins(p.end))||null;
+function renderTodaySidebar() {
+  const now = new Date();
+  const todayNum = getBlockDay(now);
+  const tmrwNum  = getBlockDay(nextSchoolDay(now));
+  renderDayBlocks('today-list',    todayNum);
+  renderDayBlocks('tomorrow-list', tmrwNum);
 }
-function getActiveEvent(){const now=new Date();return EVENTS.find(e=>!e.allDay&&now>=e.start&&now<e.end)||null;}
-function getNextEvent(){const now=new Date();return EVENTS.find(e=>!e.allDay&&e.start>now)||null;}
-function getTodayAllDay(){const now=new Date();return EVENTS.filter(e=>e.allDay&&sameDay(e.start,now));}
 
-function colorForMins(m){
+// ── MAIN RENDER ──
+function colorForMins(m) {
   if(m<5)  return {c:'var(--red)',   pool:MSG.ending};
   if(m<15) return {c:'var(--amber)', pool:MSG.soon};
   if(m<35) return {c:'var(--teal)',  pool:MSG.midway};
   return         {c:'var(--green)',  pool:MSG.early};
 }
 
-function renderMain(dayNum){
-  const now=new Date(), nm=nowMins();
-  const area=document.getElementById('main-area');
-  const activeEvent=getActiveEvent();
-  const activeBlock=getActiveBlock(dayNum);
-  const nextEvent=getNextEvent();
-  const allDay=getTodayAllDay();
+function renderMain(dayNum) {
+  const nm  = nowMins();
+  const area = document.getElementById('main-area');
 
-  document.getElementById('block-day-label').textContent=dayNum?`Day ${dayNum}`:'—';
 
-  if(activeEvent){
-    const rem=(activeEvent.end-now)/1000;
-    const total=(activeEvent.end-activeEvent.start)/1000;
-    const pct=Math.min(100,((total-rem)/total)*100);
-    const {c,pool}=colorForMins(rem/60);
-    const msg=pickMsg(pool);
-    area.innerHTML=`
-      <div class="mode-label"><span class="live-dot"></span><span style="color:var(--green-mid)">Live Event</span></div>
-      <div class="event-title-big">${esc(activeEvent.title)}</div>
+  // Find active block
+  const schedule = dayNum && BLOCK_SCHEDULE[dayNum];
+  const activeBlock = schedule
+    ? schedule.find(p => nm >= toMins(p.start) && nm < toMins(p.end)) || null
+    : null;
+
+  if (activeBlock) {
+    const rem   = Math.max(0, (toMins(activeBlock.end) - nm) * 60);
+    const total = (toMins(activeBlock.end) - toMins(activeBlock.start)) * 60;
+    const pct   = Math.min(100, ((total - rem) / total) * 100);
+    const {c, pool} = colorForMins(rem / 60);
+    area.innerHTML = `
+      <div class="mode-label"><span class="live-dot"></span><span style="color:var(--green-mid)">Now</span></div>
+      <div class="event-title-big">${esc(activeBlock.name)}</div>
       <div class="meta-row">
         <div class="meta-chip">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 1.5"/></svg>
-          ${fmtTime(activeEvent.start)} – ${fmtTime(activeEvent.end)}
+          ${fmtTime12(activeBlock.start)} – ${fmtTime12(activeBlock.end)}
         </div>
-        ${activeEvent.location?`<div class="meta-chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.5-2-4.5-4.5-4.5z"/><circle cx="8" cy="6" r="1.5"/></svg>${esc(activeEvent.location)}</div>`:''}
       </div>
       <div class="time-block">
         <div class="time-label">Time Remaining</div>
         <div class="time-value" style="color:${c}">${fmtSec(rem)}</div>
         <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
       </div>
-      <div class="motivational">${esc(msg)}</div>`;
+      <div class="motivational">${esc(pickMsg(pool))}</div>`;
     return;
   }
 
-  if(activeBlock){
-    const bEnd=toMins(activeBlock.end),bStart=toMins(activeBlock.start);
-    const rem=Math.max(0,(bEnd-nm)*60);
-    const total=(bEnd-bStart)*60;
-    const pct=Math.min(100,((total-rem)/total)*100);
-    const {c,pool}=colorForMins(rem/60);
-    const msg=pickMsg(pool);
-    const lbl=activeBlock.name==='Break'?'Morning Break':activeBlock.name==='Lunch'?'Lunch Break':`Period ${activeBlock.name}`;
-    area.innerHTML=`
-      <div class="mode-label"><span class="live-dot"></span><span style="color:var(--green-mid)">Block in Session · Day ${dayNum}</span></div>
-      <div class="event-title-big">${esc(lbl)}</div>
-      <div class="meta-row">
-        <div class="meta-chip"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5l2 1.5"/></svg>${activeBlock.start} – ${activeBlock.end}</div>
-      </div>
-      <div class="time-block">
-        <div class="time-label">Time Remaining</div>
-        <div class="time-value" style="color:${c}">${fmtSec(rem)}</div>
-        <div class="prog-track"><div class="prog-fill" style="width:${pct}%;background:${c}"></div></div>
-      </div>
-      <div class="motivational">${esc(msg)}</div>`;
-    return;
-  }
+  // IDLE — find next block
+  const isAfterSchool = nm >= 15 * 60;
+  const pool = isAfterSchool ? MSG.closing : MSG.idle;
 
-  // IDLE
-  const isAfter=nm>=15*60;
-  const pool=isAfter?MSG.closing:MSG.idle;
-  const msg=pickMsg(pool);
-  const allDayHtml=allDay.length?`<div class="meta-row">${allDay.map(e=>`<div class="meta-chip">${esc(e.title)}</div>`).join('')}</div>`:'';
-  let nextHtml='';
-  if(nextEvent){
-    const diff=(nextEvent.start-now)/1000/60;
-    const when=diff<60?`in ${Math.round(diff)} min`:diff<1440?`Today at ${fmtTime(nextEvent.start)}`:`${nextEvent.start.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})} · ${fmtTime(nextEvent.start)}`;
-    nextHtml=`<div class="next-teaser">
+  // Next block today
+  let nextBlock = schedule ? schedule.find(p => toMins(p.start) > nm) : null;
+  let nextHtml = '';
+  if (nextBlock) {
+    const diff = (toMins(nextBlock.start) - nm) * 60;
+    const when = diff < 3600 ? `in ${Math.round(diff/60)} min` : `at ${fmtTime12(nextBlock.start)}`;
+    nextHtml = `<div class="next-teaser">
       <span class="next-lbl">Up next</span>
       <div class="next-vdiv"></div>
       <div>
-        <div class="next-title">${esc(nextEvent.title)}</div>
-        <div class="next-when">${when}${nextEvent.location?' · '+esc(nextEvent.location):''}</div>
+        <div class="next-title">${esc(nextBlock.name)}</div>
+        <div class="next-when">${when}</div>
       </div>
     </div>`;
   }
-  area.innerHTML=`
-    <div class="mode-label"><span class="live-dot" style="background:var(--gray-3)"></span><span style="color:var(--text-faint)">${isAfter?'After School':'Between Blocks'}</span></div>
-    <div class="idle-hero">${isAfter?'Great work today, HRS.':'No block in session right now.'}</div>
-    ${allDayHtml}
+
+  // Tomorrow's blocks
+  const tmrw = nextSchoolDay(new Date());
+  const tmrwNum = getBlockDay(tmrw);
+  const tmrwBlocks = tmrwNum && BLOCK_SCHEDULE[tmrwNum] ? BLOCK_SCHEDULE[tmrwNum] : [];
+  let tmrwHtml = '';
+  if (tmrwBlocks.length) {
+    const dayName = tmrw.toLocaleDateString('en-US', {weekday:'long'});
+    tmrwHtml = `<div style="margin-top:20px;max-width:680px;position:relative;z-index:1">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-faint);margin-bottom:10px">${dayName} · Day ${tmrwNum}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${tmrwBlocks.map(p=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--white);border:1.5px solid var(--gray-1);border-radius:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap;min-width:130px">${fmtTime12(p.start)} – ${fmtTime12(p.end)}</div>
+          <div style="font-size:13px;font-weight:600;color:var(--green-dark)">${esc(p.name)}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  area.innerHTML = `
+    <div class="mode-label"><span class="live-dot" style="background:var(--gray-3)"></span><span style="color:var(--text-faint)">${isAfterSchool ? 'After School' : 'Between Blocks'}</span></div>
+    <div class="idle-hero">${isAfterSchool ? 'Great work today, HRS.' : 'No block in session right now.'}</div>
     ${nextHtml}
-    <div class="motivational" style="margin-top:22px">${esc(msg)}</div>`;
+    ${tmrwHtml}
+    <div class="motivational" style="margin-top:22px">${esc(pickMsg(pool))}</div>`;
 }
 
 // ── MAIN LOOP ──
@@ -788,5 +826,3 @@ setInterval(tick,1000);
 </script>
 </body>
 </html>
-</html>
-
